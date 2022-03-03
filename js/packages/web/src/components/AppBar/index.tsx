@@ -113,7 +113,7 @@ export const MetaplexMenu = () => {
 export const LogoLink = () => {
   return (
     <Link to={`/`}>
-      <img src={'/metaplex-logo.svg'} />
+      <img src={'/ZOLAMO-MKTPLACE.png'} width={48} height={48} />
     </Link>
   );
 };

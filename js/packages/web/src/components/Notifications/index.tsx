@@ -573,7 +573,7 @@ export function Notifications() {
       {!!notifications.length && (
         <div className="mobile-notification">{notifications.length - 1}</div>
       )}
-    </Popover>
+      </Popover>
   );
 
   if (notifications.length === 0) return justContent;
