@@ -17,7 +17,7 @@ import { loadCache, saveCache } from '../helpers/cache';
 import { arweaveUpload } from '../helpers/upload/arweave';
 import {
   makeArweaveBundleUploadGenerator,
-  withdraw_bundlr,
+  withdrawBundlr,
 } from '../helpers/upload/arweave-bundle';
 import { awsUpload } from '../helpers/upload/aws';
 import { ipfsCreds, ipfsUpload } from '../helpers/upload/ipfs';
@@ -58,6 +58,7 @@ export async function uploadV2({
   rateLimit,
   collectionMintPubkey,
   setCollectionMint,
+  rpcUrl,
 }: {
   files: string[];
   cacheName: string;
@@ -99,6 +100,7 @@ export async function uploadV2({
   rateLimit: number;
   collectionMintPubkey: null | PublicKey;
   setCollectionMint: boolean;
+  rpcUrl: null | string;
 }): Promise<boolean> {
   const savedContent = loadCache(cacheName, env);
   const cacheContent = savedContent || {};
@@ -183,8 +185,7 @@ export async function uploadV2({
           collectionMintPubkey,
         );
         console.log('Collection: ', collection);
-        cacheContent.program.collection =
-          collection.collectionMetadata.toBase58();
+        cacheContent.program.collection = collection.collectionMetadata;
       } else {
         console.log('No collection set');
       }
@@ -235,6 +236,7 @@ export async function uploadV2({
           : undefined,
         storage === StorageType.ArweaveSol ? walletKeyPair : undefined,
         batchSize,
+        rpcUrl,
       );
 
       let result = arweaveBundleUploadGenerator.next();
@@ -259,7 +261,7 @@ export async function uploadV2({
       if (storage === StorageType.ArweaveSol && env !== 'devnet') {
         log.info('Waiting 5 seconds to check Bundlr balance.');
         await sleep(5000);
-        await withdraw_bundlr(walletKeyPair);
+        await withdrawBundlr(walletKeyPair);
       }
     } else {
       const progressBar = new cliProgress.SingleBar(

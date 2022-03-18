@@ -22,6 +22,10 @@ log.setLevel('info');
 programCommand('mint')
   .requiredOption('-u, --url <string>', 'metadata url')
   .option(
+    '-w, --to-wallet <string>',
+    'Optional: Wallet to receive nft. Defaults to keypair public key',
+  )
+  .option(
     '-c, --collection <string>',
     'Optional: Set this NFT as a part of a collection, Note you must be the update authority for this to work.',
   )
@@ -38,6 +42,7 @@ programCommand('mint')
       keypair,
       env,
       url,
+      toWallet,
       collection,
       useMethod,
       totalUses,
@@ -57,7 +62,10 @@ programCommand('mint')
       collectionKey = new PublicKey(collection);
     }
     const supply = maxSupply || 0;
-
+    let receivingWallet;
+    if (toWallet) {
+      receivingWallet = new PublicKey(toWallet);
+    }
     await mintNFT(
       solConnection,
       walletKeyPair,
@@ -67,6 +75,7 @@ programCommand('mint')
       supply,
       verifyCreators,
       structuredUseMethod,
+      receivingWallet,
     );
   });
 
@@ -120,7 +129,7 @@ programCommand('update-metadata')
   .option('-u, --url <string>', 'metadata url')
   .option(
     '-c, --collection <string>',
-    'Optional: Set this NFT as a part of a collection, Note you must be updat authority for this to work.',
+    'Optional: Set this NFT as a part of a collection, Note you must be update authority on the NFT for this to work.',
   )
   .option('-um, --use-method <string>', 'Optional: Single, Multiple, or Burn')
   .option('-tum, --total-uses <number>', 'Optional: Allowed Number of Uses')
